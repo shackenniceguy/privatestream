@@ -1,0 +1,14 @@
+[Unit]
+Description=PrivateStream 24/7 Personal Streaming Backend & Telegram Bot
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/shacken/IT/privatestream/backend
+ExecStart=/home/shacken/IT/privatestream/backend/.venv/bin/python daemon_runner.py
+Restart=always
+RestartSec=5
+EnvironmentFile=/home/shacken/IT/privatestream/.env
+
+[Install]
+WantedBy=default.target

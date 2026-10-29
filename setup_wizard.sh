@@ -74,3 +74,4 @@ echo "=================================================================="
 echo "🎉 Setup complete! All credentials saved in .env and config/rclone.conf"
 echo "You can now run: docker compose up -d"
 echo "=================================================================="
+
