@@ -110,6 +110,11 @@ class ResponsiveShell extends StatelessWidget {
               activeIcon: Icon(Icons.cloud_download, color: AppTheme.cyberCyan),
               label: 'Torrents',
             ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings_outlined),
+              activeIcon: Icon(Icons.settings, color: AppTheme.cyberCyan),
+              label: 'Settings',
+            ),
           ],
         ),
       ),
@@ -159,6 +164,11 @@ class ResponsiveShell extends StatelessWidget {
                 icon: Icon(Icons.cloud_download_outlined),
                 selectedIcon: Icon(Icons.cloud_download),
                 label: Text('Torrents'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.settings_outlined),
+                selectedIcon: Icon(Icons.settings),
+                label: Text('Settings'),
               ),
             ],
           ),
@@ -239,6 +249,7 @@ class ResponsiveShell extends StatelessWidget {
                 _buildSidebarItem(0, 'Media Catalog', Icons.movie_outlined, Icons.movie),
                 _buildSidebarItem(1, 'Offline Downloads', Icons.download_for_offline_outlined, Icons.download_for_offline),
                 _buildSidebarItem(2, 'Cloud Ingestion', Icons.cloud_download_outlined, Icons.cloud_download),
+                _buildSidebarItem(3, 'Configuration', Icons.settings_outlined, Icons.settings),
                 const Spacer(),
                 Padding(
                   padding: const EdgeInsets.all(16),

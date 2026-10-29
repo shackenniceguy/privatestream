@@ -200,3 +200,4 @@ class TmdbClient:
         except Exception as e:
             logger.warning(f"Failed to fetch genres for TMDB ID {tmdb_id}: {e}")
         return "Cinema"
+

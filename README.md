@@ -157,3 +157,4 @@ flutter run -d linux   # Or -d windows, -d macos, -d chrome, or connect Android/
 | `GET` | `/api/torrents/list` | List active torrent jobs, download speed, ETA |
 | `DELETE` | `/api/torrents/{hash}`| Cancel and remove torrent |
 | `WS` | `/ws/torrents` | Real-time WebSocket broadcasting download progress |
+

@@ -9,6 +9,7 @@ import 'package:privatestream/core/theme.dart';
 import 'package:privatestream/core/responsive_shell.dart';
 import 'package:privatestream/screens/home_screen.dart';
 import 'package:privatestream/screens/downloads_screen.dart';
+import 'package:privatestream/screens/settings_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,6 +58,7 @@ class _MainNavigationRootState extends State<MainNavigationRoot> {
     HomeScreen(),
     DownloadsScreen(initialTabIndex: 0), // On-Device Offline Downloads
     DownloadsScreen(initialTabIndex: 1), // Cloud Torrents Ingestion Queue
+    SettingsScreen(),                   // Server Endpoint & Offline Storage Management
   ];
 
   @override

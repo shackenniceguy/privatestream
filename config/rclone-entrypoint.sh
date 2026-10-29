@@ -84,3 +84,4 @@ fi
 
 # Wait for rclone process to keep container running
 wait ${RCLONE_PID}
+

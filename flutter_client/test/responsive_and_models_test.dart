@@ -70,7 +70,7 @@ void main() {
 
   group('DownloadTask Tests', () {
     test('DownloadTask serialization and formatting', () {
-      final task = DownloadTask(
+      const task = DownloadTask(
         mediaId: 100,
         title: 'Cyberpunk 2099',
         mediaType: 'movie',
@@ -99,3 +99,4 @@ void main() {
     });
   });
 }
+

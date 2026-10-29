@@ -621,3 +621,4 @@ async def websocket_torrents(websocket: WebSocket):
         logger.info("WebSocket client disconnected from /ws/torrents")
     except Exception as e:
         logger.warning(f"WebSocket error: {e}")
+

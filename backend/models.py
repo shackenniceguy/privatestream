@@ -165,3 +165,4 @@ class TorrentJob(Base):
             "added_at": self.added_at.isoformat() if self.added_at else None,
             "completed_at": self.completed_at.isoformat() if self.completed_at else None,
         }
+
