@@ -1,0 +1,13 @@
+[Unit]
+Description=PrivateStream Cloudflare Public HTTPS Tunnel
+After=network.target privatestream.service
+
+[Service]
+Type=simple
+WorkingDirectory=/home/shacken/IT/privatestream
+ExecStart=/home/shacken/IT/privatestream/config/bin/cloudflared tunnel --url http://127.0.0.1:8000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

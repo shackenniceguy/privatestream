@@ -12,3 +12,4 @@ EnvironmentFile=/home/shacken/IT/privatestream/.env
 
 [Install]
 WantedBy=default.target
+

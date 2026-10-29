@@ -22,9 +22,19 @@ from models import MediaItem, SubtitleTrack, WatchProgress, TorrentJob
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("privatestream.api")
 
-LOCAL_DOWNLOAD_DIR = Path(os.getenv("LOCAL_DOWNLOAD_DIR", "/data/local_downloads"))
+def resolve_directory(env_var: str, default_path: str, fallback_folder: str) -> Path:
+    target = Path(os.getenv(env_var, default_path))
+    try:
+        target.mkdir(parents=True, exist_ok=True)
+        return target
+    except (PermissionError, OSError):
+        fb = Path(__file__).resolve().parent.parent / "data" / fallback_folder
+        fb.mkdir(parents=True, exist_ok=True)
+        return fb
+
+LOCAL_DOWNLOAD_DIR = resolve_directory("LOCAL_DOWNLOAD_DIR", "/data/local_downloads", "local_downloads")
 REMOTE_MEDIA_DIR = Path(os.getenv("REMOTE_MEDIA_DIR", "/mnt/gdrive/Media"))
-VFS_CACHE_DIR = Path(os.getenv("VFS_CACHE_DIR", "/data/vfs_cache"))
+VFS_CACHE_DIR = resolve_directory("VFS_CACHE_DIR", "/data/vfs_cache", "vfs_cache")
 QBITTORRENT_HOST = os.getenv("QBITTORRENT_HOST", "qbittorrent-nox")
 QBITTORRENT_PORT = int(os.getenv("QBITTORRENT_PORT", "8080"))
 QBITTORRENT_USER = os.getenv("QBITTORRENT_USER", "admin")
