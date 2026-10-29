@@ -1,0 +1,128 @@
+version: '3.8'
+
+services:
+  # --------------------------------------------------------------------------
+  # 1. Anti-Ban Google Drive Mount (rclone with strict VFS cache)
+  # --------------------------------------------------------------------------
+  rclone-mount:
+    image: rclone/rclone:latest
+    container_name: privatestream-rclone
+    restart: unless-stopped
+    cap_add:
+      - SYS_ADMIN
+    devices:
+      - /dev/fuse:/dev/fuse
+    security_opt:
+      - apparmor:unconfined
+    environment:
+      - RCLONE_REMOTE_NAME=${RCLONE_REMOTE_NAME:-gdrive}
+      - RCLONE_MOUNT_PATH=${RCLONE_MOUNT_PATH:-/mnt/gdrive}
+      - RCLONE_DRIVE_CLIENT_ID=${RCLONE_DRIVE_CLIENT_ID:-}
+      - RCLONE_DRIVE_CLIENT_SECRET=${RCLONE_DRIVE_CLIENT_SECRET:-}
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./config/rclone.conf:/root/.config/rclone/rclone.conf:ro
+      - ./config/rclone-entrypoint.sh:/entrypoint.sh:ro
+      - vfs_cache:/data/vfs_cache
+      - gdrive_mount:/mnt/gdrive:rshared
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+
+  # --------------------------------------------------------------------------
+  # 2. Local Torrent Client (qBittorrent-nox - Strictly isolated to local SSD)
+  # --------------------------------------------------------------------------
+  qbittorrent-nox:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: privatestream-qbittorrent
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - WEBUI_PORT=8080
+      - TORRENTING_PORT=6881
+    volumes:
+      - qbittorrent_config:/config
+      - local_downloads:/data/local_downloads
+    ports:
+      - "8080:8080"
+      - "6881:6881"
+      - "6881:6881/udp"
+
+  # --------------------------------------------------------------------------
+  # 3. Post-Processing Ingestor & Telegram Bot
+  # --------------------------------------------------------------------------
+  ingestor:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: privatestream-ingestor
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-sqlite+aiosqlite:////data/db/privatestream.db}
+      - LOCAL_DOWNLOAD_DIR=/data/local_downloads
+      - REMOTE_MEDIA_DIR=/mnt/gdrive/Media
+      - QBITTORRENT_HOST=qbittorrent-nox
+      - QBITTORRENT_PORT=8080
+      - QBITTORRENT_USER=${QBITTORRENT_USER:-admin}
+      - QBITTORRENT_PASSWORD=${QBITTORRENT_PASSWORD:-adminadmin}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - ALLOWED_USER_ID=${ALLOWED_USER_ID:-}
+      - TMDB_API_KEY=${TMDB_API_KEY:-}
+      - TMDB_LANGUAGE=${TMDB_LANGUAGE:-ru-RU}
+      - RCLONE_REMOTE_NAME=${RCLONE_REMOTE_NAME:-gdrive}
+    volumes:
+      - local_downloads:/data/local_downloads
+      - gdrive_mount:/mnt/gdrive:rshared
+      - db_data:/data/db
+      - ./backend:/app
+    depends_on:
+      - qbittorrent-nox
+      - rclone-mount
+    command: ["python", "-m", "ingestor"]
+
+  # --------------------------------------------------------------------------
+  # 4. FastAPI Streaming & Catalog API
+  # --------------------------------------------------------------------------
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: privatestream-api
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-sqlite+aiosqlite:////data/db/privatestream.db}
+      - LOCAL_DOWNLOAD_DIR=/data/local_downloads
+      - REMOTE_MEDIA_DIR=/mnt/gdrive/Media
+      - VFS_CACHE_DIR=/data/vfs_cache
+      - QBITTORRENT_HOST=qbittorrent-nox
+      - QBITTORRENT_PORT=8080
+      - QBITTORRENT_USER=${QBITTORRENT_USER:-admin}
+      - QBITTORRENT_PASSWORD=${QBITTORRENT_PASSWORD:-adminadmin}
+      - API_SECRET_KEY=${API_SECRET_KEY:-private_netflix_secret_key_change_in_production}
+      - TMDB_API_KEY=${TMDB_API_KEY:-}
+      - TMDB_LANGUAGE=${TMDB_LANGUAGE:-ru-RU}
+    volumes:
+      - local_downloads:/data/local_downloads:ro
+      - gdrive_mount:/mnt/gdrive:ro
+      - vfs_cache:/data/vfs_cache:ro
+      - db_data:/data/db
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - rclone-mount
+      - ingestor
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+
+volumes:
+  local_downloads:
+    driver: local
+  vfs_cache:
+    driver: local
+  qbittorrent_config:
+    driver: local
+  db_data:
+    driver: local
+  gdrive_mount:
+    driver: local

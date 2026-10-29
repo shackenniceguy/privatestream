@@ -1,0 +1,43 @@
+name: privatestream
+description: "PrivateStream - End-to-end Personal Streaming Platform"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  flutter_riverpod: ^2.5.1
+
+  # Networking & HTTP Range Downloads
+  dio: ^5.7.0
+  web_socket_channel: ^3.0.1
+  connectivity_plus: ^6.0.5
+
+  # Video Playback Engine (libmpv Hardware Accelerated)
+  media_kit: ^1.1.11
+  media_kit_video: ^1.2.5
+  media_kit_libs_video: ^1.0.6
+
+  # Local Persistence & Offline Management
+  sqflite: ^2.3.3+1
+  sqflite_common_ffi: ^2.3.3
+  path_provider: ^2.1.4
+  path: ^1.9.0
+
+  # UI Components & Image Caching
+  cached_network_image: ^3.4.1
+  cupertino_icons: ^1.0.8
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
