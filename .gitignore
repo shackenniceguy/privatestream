@@ -27,6 +27,8 @@ vfs_cache/
 *.db
 *.sqlite3
 .env
+config/rclone.conf
+config/bin/
 
 # Logs
 *.log

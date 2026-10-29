@@ -15,3 +15,4 @@ echo "🎬 Launching PrivateStream Flutter Desktop Application"
 echo "========================================================"
 
 flutter run -d linux
+
